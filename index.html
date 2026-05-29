@@ -491,6 +491,31 @@
             width: 24px; height: 24px;
         }
 
+        /* 通知バッジ */
+        .notification-badge {
+            position: absolute;
+            top: -2px; right: -2px;
+            width: 8px; height: 8px;
+            background-color: #D97070; /* 優しい赤 */
+            border-radius: 50%;
+            border: 2px solid rgba(250, 248, 245, 0.9);
+        }
+
+        /* 通知アイテム */
+        .notification-item {
+            padding: 16px;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item.unread {
+            background-color: rgba(212, 187, 165, 0.05);
+        }
+
         /* ユーティリティ */
         .text-center { text-align: center; }
         .mt-2 { margin-top: 8px; }
@@ -508,7 +533,14 @@
             <i data-lucide="leaf" style="color: var(--color-accent)"></i>
             つむぐ
         </div>
-        <i data-lucide="bell" style="color: var(--color-text-light)"></i>
+        <div style="display: flex; gap: 16px; align-items: center;">
+            <button onclick="openHowToModal()" style="color: var(--color-text-light);"><i data-lucide="help-circle"></i></button>
+            <button onclick="openSettingsModal()" style="color: var(--color-text-light);"><i data-lucide="settings"></i></button>
+            <button onclick="openNotificationModal()" style="color: var(--color-text-light); position: relative;">
+                <i data-lucide="bell"></i>
+                <span class="notification-badge" id="bell-badge"></span>
+            </button>
+        </div>
     </header>
 
     <!-- メインコンテンツ領域 -->
@@ -548,11 +580,11 @@
                     ショップへの導線
                 </h3>
                 <div style="display: flex; gap: 12px; flex-direction: column;">
-                    <button class="btn-outline">
+                    <button class="btn-outline" onclick="openInstagram()">
                         <i data-lucide="instagram"></i>
                         Instagramを開く
                     </button>
-                    <button class="btn-outline" style="border-color: #A3B899; color: #7A936F;">
+                    <button class="btn-outline" style="border-color: #A3B899; color: #7A936F;" onclick="openBaseShop()">
                         <i data-lucide="shopping-bag"></i>
                         BASEショップを開く
                     </button>
@@ -832,6 +864,130 @@
         </div>
     </div>
 
+    <!-- ==========================================
+         モーダル：設定画面 (アカウント登録)
+         ========================================== -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeSettingsModal()"><i data-lucide="x"></i></button>
+            <h3 class="title-font text-center mb-4"><i data-lucide="settings" style="color:var(--color-primary)"></i> 初期設定</h3>
+            <p style="font-size: 13px; color: var(--color-text-light); margin-bottom: 20px; text-align: center;">
+                あなたのアカウントを登録しておくと、<br>アプリからスムーズにショップへ移動できます。
+            </p>
+            
+            <div class="mb-4">
+                <label style="font-size: 14px; font-weight: bold; display: block; margin-bottom: 8px;">Instagram ID</label>
+                <input type="text" id="setting-insta-id" placeholder="例: your_account_id ( @ は不要 )" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); font-size: 14px; background-color: var(--color-bg);">
+            </div>
+
+            <div class="mb-4">
+                <label style="font-size: 14px; font-weight: bold; display: block; margin-bottom: 8px;">BASEショップ URL</label>
+                <input type="url" id="setting-base-url" placeholder="例: https://yourshop.base.shop/" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); font-size: 14px; background-color: var(--color-bg);">
+            </div>
+
+            <button class="btn-primary mt-4" onclick="saveSettings()">設定を保存する</button>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         モーダル：使い方ガイド
+         ========================================== -->
+    <div class="modal-overlay" id="howto-modal">
+        <div class="modal-content" style="max-width: 440px;">
+            <button class="close-modal" onclick="closeHowToModal()"><i data-lucide="x"></i></button>
+            <h3 class="title-font text-center mb-4"><i data-lucide="book-open" style="color:var(--color-primary)"></i> アプリの使い方</h3>
+            
+            <div style="font-size: 14px; color: var(--color-text-main); line-height: 1.8;">
+                <p class="mb-4 text-center">「つむぐ」へようこそ。<br>このアプリは、作品への想いを言葉にして、ファンを増やしていくための優しいサポートツールです。</p>
+
+                <h4 class="title-font" style="color: var(--color-primary-dark); margin-top: 16px; margin-bottom: 8px; border-bottom: 1px solid var(--color-border); padding-bottom: 4px;">🌿 アプリの目的</h4>
+                <ul class="checklist" style="margin-bottom: 16px;">
+                    <li>「売り込み感」を減らし、自然に共感される世界観を作ります。</li>
+                    <li>Instagramでの発信と、BASEでの販売をスムーズにつなぎます。</li>
+                    <li>投稿文や商品紹介をAIがお手伝いし、あなたの負担を軽くします。</li>
+                </ul>
+
+                <h4 class="title-font" style="color: var(--color-primary-dark); margin-top: 16px; margin-bottom: 8px; border-bottom: 1px solid var(--color-border); padding-bottom: 4px;">✨ 基本の使い方</h4>
+
+                <div style="margin-bottom: 16px;">
+                    <b style="color: var(--color-text-main); display: flex; align-items: center; gap: 4px; margin-bottom: 4px;"><i data-lucide="plus-circle" style="width: 16px; height: 16px; color: var(--color-primary)"></i> つくる</b>
+                    <ul class="checklist" style="margin-top: 4px;">
+                        <li>写真を選ぶだけで、AIが「Instagram用」と「BASE用」の温かい文章を自動で作成します。</li>
+                        <li>そのままコピーして、すぐに投稿や出品に使えます。</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <b style="color: var(--color-text-main); display: flex; align-items: center; gap: 4px; margin-bottom: 4px;"><i data-lucide="book-heart" style="width: 16px; height: 16px; color: var(--color-primary)"></i> 学ぶ</b>
+                    <ul class="checklist" style="margin-top: 4px;">
+                        <li>SNS運用のコツを、専門用語を使わずに優しく解説しています。</li>
+                        <li>「どう書けばいいか迷った時」のヒント集としてご活用ください。</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <b style="color: var(--color-text-main); display: flex; align-items: center; gap: 4px; margin-bottom: 4px;"><i data-lucide="calendar-days" style="width: 16px; height: 16px; color: var(--color-primary)"></i> 予定</b>
+                    <ul class="checklist" style="margin-top: 4px;">
+                        <li>「今日は何を投稿しよう？」と迷った時のためのカレンダーです。</li>
+                        <li>毎日、おすすめの投稿テーマを提案します。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <button class="btn-primary mt-4" onclick="closeHowToModal()">確認して閉じる</button>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         モーダル：お知らせ（通知）
+         ========================================== -->
+    <div class="modal-overlay" id="notification-modal">
+        <div class="modal-content" style="padding: 0; overflow: hidden; max-width: 440px;">
+            <div style="padding: 24px 24px 16px; border-bottom: 1px solid var(--color-border); position: relative;">
+                <button class="close-modal" onclick="closeNotificationModal()" style="top: 24px;"><i data-lucide="x"></i></button>
+                <h3 class="title-font text-center"><i data-lucide="bell" style="color:var(--color-primary); width: 20px; vertical-align: middle;"></i> お知らせ</h3>
+            </div>
+            
+            <div style="max-height: 60vh; overflow-y: auto;">
+                <!-- 長期制作を見据えた事前お知らせ（新規追加） -->
+                <div class="notification-item unread">
+                    <div style="color: var(--color-accent); margin-top: 4px;"><i data-lucide="lightbulb"></i></div>
+                    <div>
+                        <p style="font-size: 11px; color: var(--color-text-light); margin-bottom: 4px;">今日 09:00</p>
+                        <p style="font-size: 14px; font-weight: bold; margin-bottom: 4px;">新作の完成まで、あと1週間ですね🌿</p>
+                        <p style="font-size: 13px; color: var(--color-text-main);">じっくり時間をかけた作品作り、本当にお疲れ様です。今日は完成を待ってくれている方へ向けて、あえて「一部だけ」をチラ見せする投稿をしてみませんか？</p>
+                        <button class="btn-outline mt-2" style="padding: 8px 16px; font-size: 12px; width: auto;" onclick="closeNotificationModal(); switchNav('nav-create', 'page-create');">
+                            チラ見せ投稿をつくる
+                        </button>
+                    </div>
+                </div>
+
+                <!-- カレンダー連動の通知（未読） -->
+                <div class="notification-item unread">
+                    <div style="color: var(--color-accent); margin-top: 4px;"><i data-lucide="calendar-days"></i></div>
+                    <div>
+                        <p style="font-size: 11px; color: var(--color-text-light); margin-bottom: 4px;">今日 08:00</p>
+                        <p style="font-size: 14px; font-weight: bold; margin-bottom: 4px;">今日のテーマは「素材へのこだわり」🌿</p>
+                        <p style="font-size: 13px; color: var(--color-text-main);">カレンダーで予定されている投稿日です。いつも使っているパーツの写真を撮って、AIと一緒に文章を作ってみませんか？</p>
+                        <button class="btn-outline mt-2" style="padding: 8px 16px; font-size: 12px; width: auto;" onclick="closeNotificationModal(); switchNav('nav-create', 'page-create');">
+                            投稿をつくる
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 励ましの通知 -->
+                <div class="notification-item">
+                    <div style="color: var(--color-primary); margin-top: 4px;"><i data-lucide="award"></i></div>
+                    <div>
+                        <p style="font-size: 11px; color: var(--color-text-light); margin-bottom: 4px;">昨日</p>
+                        <p style="font-size: 14px; font-weight: bold; margin-bottom: 4px;">3日連続の投稿、お疲れ様です☕️</p>
+                        <p style="font-size: 13px; color: var(--color-text-main);">少しずつ、あなたの世界観が形になってきていますね。今日はゆっくり休んで、明日また無理なく進めましょう。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div> <!-- app end -->
 
 <!-- ==========================================================================
@@ -840,6 +996,79 @@
 <script>
     // 1. Lucideアイコンの初期化
     lucide.createIcons();
+
+    // アカウント設定の読み込みと保存
+    window.onload = function() {
+        loadSettings();
+    };
+
+    function loadSettings() {
+        const instaId = localStorage.getItem('tsumugu_insta_id') || '';
+        const baseUrl = localStorage.getItem('tsumugu_base_url') || '';
+        document.getElementById('setting-insta-id').value = instaId;
+        document.getElementById('setting-base-url').value = baseUrl;
+    }
+
+    function saveSettings() {
+        const instaId = document.getElementById('setting-insta-id').value.trim();
+        const baseUrl = document.getElementById('setting-base-url').value.trim();
+        localStorage.setItem('tsumugu_insta_id', instaId);
+        localStorage.setItem('tsumugu_base_url', baseUrl);
+        
+        alert('設定を保存しました🌿');
+        closeSettingsModal();
+    }
+
+    function openSettingsModal() {
+        loadSettings();
+        document.getElementById('settings-modal').classList.add('active');
+    }
+
+    function closeSettingsModal() {
+        document.getElementById('settings-modal').classList.remove('active');
+    }
+
+    // 使い方モーダルの制御
+    function openHowToModal() {
+        document.getElementById('howto-modal').classList.add('active');
+    }
+
+    function closeHowToModal() {
+        document.getElementById('howto-modal').classList.remove('active');
+    }
+
+    // お知らせモーダルの制御
+    function openNotificationModal() {
+        document.getElementById('notification-modal').classList.add('active');
+        // 開いたら未読バッジを消す演出
+        document.getElementById('bell-badge').style.display = 'none';
+        document.querySelectorAll('.notification-item').forEach(el => el.classList.remove('unread'));
+    }
+
+    function closeNotificationModal() {
+        document.getElementById('notification-modal').classList.remove('active');
+    }
+
+    // ショップ・SNSを開く機能
+    function openInstagram() {
+        const instaId = localStorage.getItem('tsumugu_insta_id');
+        if (instaId) {
+            window.open(`https://instagram.com/${instaId}`, '_blank');
+        } else {
+            alert('先に右上の歯車アイコンから、Instagram IDを設定してくださいね。');
+            openSettingsModal();
+        }
+    }
+
+    function openBaseShop() {
+        const baseUrl = localStorage.getItem('tsumugu_base_url');
+        if (baseUrl) {
+            window.open(baseUrl, '_blank');
+        } else {
+            alert('先に右上の歯車アイコンから、BASEショップのURLを設定してくださいね。');
+            openSettingsModal();
+        }
+    }
 
     // 2. ページ遷移（SPA風）の制御
     function switchNav(navId, pageId) {
