@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>つむぐ - ブランド育成サポート</title>
+    
+    <!-- Google Fonts: 柔らかいゴシック体と明朝体を採用 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&family=Zen+Kaku+Gothic+Antique:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons (優しい印象のアイコンセット) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* ==========================================================================
+           1. 変数定義 (カラーパレット・フォント・余白)
+           ========================================================================== */
+        :root {
+            /* カラーパレット - ナチュラル・くすみ系・癒やし */
+            --color-primary: #D4BBA5;     /* くすみベージュ（メイン） */
+            --color-primary-dark: #BFA086;
+            --color-secondary: #E8DCD8;   /* 淡いピンクベージュ */
+            --color-accent: #A3B899;      /* くすみグリーン（アクセント） */
+            --color-bg: #FAF8F5;          /* 温かみのあるオフホワイト */
+            --color-card-bg: #FFFFFF;     /* カード背景 */
+            --color-text-main: #5C4B51;   /* 濃いブラウン（黒より優しい） */
+            --color-text-light: #8C7A80;  /* 薄いブラウン */
+            --color-border: #EFEBE7;
+            
+            /* フォント */
+            --font-main: 'Zen Kaku Gothic Antique', sans-serif; /* 読みやすいゴシック */
+            --font-title: 'Kiwi Maru', serif;                   /* 丸みのある明朝（世界観） */
+            
+            /* UI設定 */
+            --border-radius-lg: 24px;
+            --border-radius-md: 16px;
+            --border-radius-sm: 8px;
+            --shadow-soft: 0 8px 24px rgba(92, 75, 81, 0.08);
+            --shadow-float: 0 12px 32px rgba(92, 75, 81, 0.12);
+            --transition: all 0.3s ease;
+        }
+
+        /* ==========================================================================
+           2. ベーススタイル (リセットと基本設定)
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--color-text-main);
+            background-color: var(--color-bg);
+            line-height: 1.6;
+            font-size: 16px; /* シニアにも見やすい大きめサイズ */
+            -webkit-font-smoothing: antialiased;
+            /* PCで見てもスマホサイズになるように中央寄せ */
+            display: flex;
+            justify-content: center;
+        }
+
+        /* アプリのコンテナ (スマホ特化) */
+        #app {
+            width: 100%;
+            max-width: 480px; /* スマホサイズの上限 */
+            min-height: 100vh;
+            background-color: var(--color-bg);
+            position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,0.05);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, .title-font {
+            font-family: var(--font-title);
+            font-weight: 500;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        img { max-width: 100%; height: auto; border-radius: var(--border-radius-sm); }
+        
+        button {
+            font-family: inherit;
+            border: none;
+            background: none;
+            cursor: pointer;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        /* ==========================================================================
+           3. 共通コンポーネント
+           ========================================================================== */
+        /* やさしいボタン */
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: #fff;
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(212, 187, 165, 0.4);
+        }
+        .btn-primary:active { transform: scale(0.98); }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--color-primary-dark);
+            border: 2px solid var(--color-primary);
+            width: 100%;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* カードデザイン */
+        .card {
+            background-color: var(--color-card-bg);
+            border-radius: var(--border-radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 16px;
+        }
+
+        /* セクション見出し */
+        .section-title {
+            font-size: 18px;
+            color: var(--color-text-main);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ふわっとアニメーション */
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ヘッダー */
+        header {
+            padding: 24px 20px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background-color: rgba(250, 248, 245, 0.9);
+            backdrop-filter: blur(8px);
+            z-index: 10;
+        }
+        .logo {
+            font-family: var(--font-title);
+            font-size: 22px;
+            color: var(--color-text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* コンテンツエリア (スクロール領域) */
+        .content-area {
+            flex: 1;
+            padding: 0 20px 100px; /* 下部ナビゲーションの分の余白 */
+            overflow-y: auto;
+        }
+
+        /* ページ（SPAの切り替え用） */
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+
+        /* タグ */
+        .badge {
+            background-color: var(--color-secondary);
+            color: var(--color-text-main);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        /* ==========================================================================
+           4. ページ個別スタイル
+           ========================================================================== */
+        /* --- トップ画面 (Home) --- */
+        .hero {
+            position: relative;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-soft);
+        }
+        .hero img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            display: block;
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to top, rgba(92,75,81,0.6), transparent);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+            color: white;
+        }
+        .hero-copy {
+            font-size: 20px;
+            line-height: 1.4;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .welcome-msg {
+            text-align: center;
+            margin-bottom: 32px;
+            color: var(--color-text-light);
+            font-size: 14px;
+        }
+
+        /* --- 投稿作成画面 (Create) --- */
+        .type-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .type-card {
+            background-color: var(--color-card-bg);
+            border: 2px solid var(--color-border);
+            border-radius: var(--border-radius-md);
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .type-card.selected {
+            border-color: var(--color-primary);
+            background-color: rgba(212, 187, 165, 0.05);
+            box-shadow: var(--shadow-soft);
+        }
+        .type-icon {
+            color: var(--color-primary);
+            margin-bottom: 12px;
+        }
+
+        .camera-area {
+            border: 2px dashed var(--color-primary);
+            border-radius: var(--border-radius-lg);
+            padding: 40px 20px;
+            text-align: center;
+            background-color: rgba(212, 187, 165, 0.05);
+            margin-bottom: 24px;
+            position: relative;
+        }
+        .camera-area input[type="file"] {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; cursor: pointer;
+        }
+        .preview-img {
+            max-width: 100%;
+            border-radius: var(--border-radius-md);
+            display: none;
+            margin-top: 16px;
+        }
+
+        /* 生成結果タブ */
+        .tabs {
+            display: flex;
+            background-color: var(--color-border);
+            border-radius: 50px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text-light);
+        }
+        .tab-btn.active {
+            background-color: var(--color-card-bg);
+            color: var(--color-primary-dark);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+        .result-box {
+            background-color: var(--color-bg);
+            border-radius: var(--border-radius-sm);
+            padding: 16px;
+            font-size: 15px;
+            white-space: pre-wrap; /* 改行を反映 */
+            margin-bottom: 16px;
+            border: 1px solid var(--color-border);
+        }
+
+        /* --- マニュアル画面 (Learn) --- */
+        .accordion {
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-md);
+            margin-bottom: 16px;
+            background-color: var(--color-card-bg);
+            overflow: hidden;
+        }
+        .accordion-header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            cursor: pointer;
+            background-color: var(--color-card-bg);
+        }
+        .accordion-content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            color: var(--color-text-light);
+            font-size: 14px;
+        }
+        .accordion.open .accordion-content {
+            padding: 0 20px 20px;
+            max-height: 500px; /* 適当な大きい値 */
+        }
+        .accordion.open .chevron {
+            transform: rotate(180deg);
+        }
+        .checklist li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 8px;
+        }
+        .checklist li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--color-accent);
+            font-weight: bold;
+        }
+
+        /* --- カレンダー画面 (Calendar) --- */
+        .today-advice {
+            background: linear-gradient(135deg, var(--color-secondary), var(--color-bg));
+            border-left: 4px solid var(--color-primary);
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            text-align: center;
+            margin-top: 16px;
+        }
+        .day-name { font-size: 12px; color: var(--color-text-light); margin-bottom: 8px;}
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 14px;
+            background-color: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+        }
+        .day.today {
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+        }
+        .day.done {
+            background-color: var(--color-accent);
+            color: white;
+            border: none;
+        }
+
+        /* モーダル (プロフィール診断用など) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(92, 75, 81, 0.4);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            background-color: var(--color-card-bg);
+            width: 90%;
+            max-width: 400px;
+            border-radius: var(--border-radius-lg);
+            padding: 32px 24px;
+            box-shadow: var(--shadow-float);
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .close-modal {
+            position: absolute;
+            top: 16px; right: 16px;
+            color: var(--color-text-light);
+        }
+
+        /* ローディングアニメーション */
+        .loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+            display: none;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--color-border);
+            border-top-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ==========================================================================
+           5. ボトムナビゲーション (固定)
+           ========================================================================== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--color-card-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 10px 24px; /* iOSのホームバー考慮 */
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            border-radius: 24px 24px 0 0;
+            z-index: 50;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--color-text-light);
+            font-size: 11px;
+            gap: 4px;
+            transition: var(--transition);
+        }
+        .nav-item.active {
+            color: var(--color-primary-dark);
+            transform: translateY(-4px);
+        }
+        .nav-item i[data-lucide] {
+            width: 24px; height: 24px;
+        }
+
+        /* ユーティリティ */
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 8px; }
+        .mt-4 { margin-top: 16px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mb-4 { margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <!-- ヘッダー -->
+    <header>
+        <div class="logo">
+            <i data-lucide="leaf" style="color: var(--color-accent)"></i>
+            つむぐ
+        </div>
+        <i data-lucide="bell" style="color: var(--color-text-light)"></i>
+    </header>
+
+    <!-- メインコンテンツ領域 -->
+    <div class="content-area">
+
+        <!-- ==========================================
+             [1] ホーム画面 (トップ & 診断)
+             ========================================== -->
+        <section id="page-home" class="page active fade-in">
+            <p class="welcome-msg">今日も無理せず、あなたらしいペースで🌿</p>
+            
+            <div class="hero">
+                <!-- プレースホルダー画像 (温かみのあるアトリエ風) -->
+                <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=600&auto=format&fit=crop" alt="ハンドメイド作業風景">
+                <div class="hero-overlay">
+                    <h2 class="title-font hero-copy">作品の想いを、<br>無理なく届ける。</h2>
+                </div>
+            </div>
+
+            <div class="card text-center">
+                <h3 class="section-title title-font" style="justify-content: center;">
+                    <i data-lucide="sparkles" style="color: var(--color-primary)"></i>
+                    Instagramプロフィール診断
+                </h3>
+                <p class="mb-4" style="font-size: 14px; color: var(--color-text-light);">
+                    売り込み感が出すぎていないか、<br>世界観が伝わっているかAIが優しく診断します。
+                </p>
+                <button class="btn-primary" onclick="openProfileModal()">
+                    <i data-lucide="search"></i>
+                    優しく診断を始める
+                </button>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title title-font">
+                    <i data-lucide="link"></i>
+                    ショップへの導線
+                </h3>
+                <div style="display: flex; gap: 12px; flex-direction: column;">
+                    <button class="btn-outline">
+                        <i data-lucide="instagram"></i>
+                        Instagramを開く
+                    </button>
+                    <button class="btn-outline" style="border-color: #A3B899; color: #7A936F;">
+                        <i data-lucide="shopping-bag"></i>
+                        BASEショップを開く
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             [2] 投稿作成・AI生成画面 (Create)
+             ========================================== -->
+        <section id="page-create" class="page fade-in">
+            <h2 class="title-font mb-4 text-center">想いを言葉にする</h2>
+            
+            <div id="create-step-1">
+                <p class="mb-2" style="font-size: 14px; font-weight: bold;">1. 今日はどちらを作りますか？</p>
+                <div class="type-selector">
+                    <div class="type-card selected" onclick="selectPostType('feed', this)">
+                        <i data-lucide="layout-grid" class="type-icon"></i>
+                        <h4 class="title-font">フィード投稿</h4>
+                        <p style="font-size: 11px; color: var(--color-text-light); margin-top: 8px;">じっくり想いを伝える</p>
+                    </div>
+                    <div class="type-card" onclick="selectPostType('reel', this)">
+                        <i data-lucide="film" class="type-icon"></i>
+                        <h4 class="title-font">リール動画</h4>
+                        <p style="font-size: 11px; color: var(--color-text-light); margin-top: 8px;">制作風景で惹きつける</p>
+                    </div>
+                </div>
+
+                <p class="mb-2" style="font-size: 14px; font-weight: bold;">2. 写真を選んでください</p>
+                <div class="camera-area">
+                    <input type="file" accept="image/*" onchange="previewImage(event)">
+                    <i data-lucide="camera" style="color: var(--color-primary); width: 32px; height: 32px; margin-bottom: 8px;"></i>
+                    <p style="color: var(--color-text-light); font-size: 14px;">タップしてアルバムから選ぶ</p>
+                    <img id="image-preview" class="preview-img" src="" alt="プレビュー">
+                </div>
+
+                <button class="btn-primary" id="btn-generate" onclick="startGeneration()" disabled style="opacity: 0.5;">
+                    <i data-lucide="wand-2"></i>
+                    AIに文章を紡いでもらう
+                </button>
+            </div>
+
+            <!-- AI生成中ローディング -->
+            <div id="create-loading" class="loader">
+                <div class="spinner"></div>
+                <p class="title-font" style="color: var(--color-primary-dark);">写真から想いを読み取っています...</p>
+                <p style="font-size: 12px; color: var(--color-text-light); margin-top: 8px;">優しい言葉を選んでいます</p>
+            </div>
+
+            <!-- 生成結果画面 -->
+            <div id="create-result" style="display: none;" class="fade-in">
+                <div class="tabs">
+                    <div class="tab-btn active" onclick="switchResultTab('insta')">Instagram用</div>
+                    <div class="tab-btn" onclick="switchResultTab('base')">BASE販売用</div>
+                </div>
+
+                <!-- Instagramタブ -->
+                <div id="tab-insta" class="tab-content active">
+                    <h4 class="section-title title-font"><i data-lucide="message-circle-heart"></i> 投稿文</h4>
+                    <div class="result-box" id="result-text">
+                        <!-- JSで挿入 -->
+                    </div>
+                    
+                    <h4 class="section-title title-font"><i data-lucide="hash"></i> ハッシュタグ</h4>
+                    <div class="result-box" id="result-tags" style="color: var(--color-primary-dark);">
+                        <!-- JSで挿入 -->
+                    </div>
+                </div>
+
+                <!-- BASEタブ -->
+                <div id="tab-base" class="tab-content">
+                    <div style="background-color: #FEEFEF; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; color: #D97070;">
+                        <i data-lucide="info" style="width: 16px; height: 16px; vertical-align: middle;"></i>
+                        ハッシュタグは不要です。売り込み感を減らし、物語を伝える文章を作成しました。
+                    </div>
+
+                    <h4 class="section-title title-font"><i data-lucide="tag"></i> 商品タイトル案</h4>
+                    <div class="result-box" style="font-weight: bold;">
+                        【春の訪れ】ミモザと淡水パールの揺れるピアス/イヤリング
+                    </div>
+
+                    <h4 class="section-title title-font"><i data-lucide="book-open"></i> 商品の想い・紹介文</h4>
+                    <div class="result-box" id="result-base-text">
+                        <!-- JSで挿入 -->
+                    </div>
+
+                    <h4 class="section-title title-font"><i data-lucide="coins"></i> おすすめ価格帯</h4>
+                    <div class="result-box" style="font-size: 18px; font-weight: bold; color: var(--color-primary-dark); text-align: center;">
+                        ¥ 2,800 〜 ¥ 3,200
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button class="btn-outline" onclick="resetCreate()">やり直す</button>
+                    <button class="btn-primary" onclick="alert('クリップボードにコピーしました！')">
+                        <i data-lucide="copy"></i> コピーする
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             [3] マニュアル画面 (Learn)
+             ========================================== -->
+        <section id="page-learn" class="page fade-in">
+            <h2 class="title-font mb-4 text-center">やさしい運用マニュアル</h2>
+            <p class="mb-4 text-center" style="font-size: 14px; color: var(--color-text-light);">
+                専門用語は少なめに。少しずつ、あなたのファンを増やしていくコツです。
+            </p>
+
+            <div class="accordion" onclick="toggleAccordion(this)">
+                <div class="accordion-header">
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="layout-grid" style="color: var(--color-primary)"></i>
+                        フィード投稿の極意
+                    </span>
+                    <i data-lucide="chevron-down" class="chevron" style="transition: transform 0.3s;"></i>
+                </div>
+                <div class="accordion-content">
+                    <ul class="checklist mt-2">
+                        <li><b>作品だけを載せない</b><br>完成品だけでなく、作っている途中の様子もファンは好きです。</li>
+                        <li><b>制作の背景を書く</b><br>「なぜこの色にしたのか」「どんな想いで作ったか」が共感を生みます。</li>
+                        <li><b>余白を大切に</b><br>写真にごちゃごちゃ文字を入れすぎず、スッキリと。</li>
+                        <li><b>保存されやすい工夫</b><br>「お手入れ方法」など、後で見返したくなる情報を最後に入れるとGOOD。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion" onclick="toggleAccordion(this)">
+                <div class="accordion-header">
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="film" style="color: var(--color-primary)"></i>
+                        リール（動画）の極意
+                    </span>
+                    <i data-lucide="chevron-down" class="chevron" style="transition: transform 0.3s;"></i>
+                </div>
+                <div class="accordion-content">
+                    <ul class="checklist mt-2">
+                        <li><b>最初の3秒が勝負</b><br>一番見せたい美しい場面や、動きのある作業風景を最初に。</li>
+                        <li><b>長さは15秒〜30秒</b><br>長すぎず、テンポよく見られる短さが好まれます。</li>
+                        <li><b>文字は大きく中央に</b><br>スマホでパッと見て読める文字サイズを意識しましょう。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion" onclick="toggleAccordion(this)">
+                <div class="accordion-header">
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="trending-up" style="color: var(--color-primary)"></i>
+                        Instagramの仕組み（やさしく解説）
+                    </span>
+                    <i data-lucide="chevron-down" class="chevron" style="transition: transform 0.3s;"></i>
+                </div>
+                <div class="accordion-content">
+                    <p class="mt-2 mb-2">Instagramは<b>「長くアプリを楽しんでくれる投稿」</b>を応援してくれます。</p>
+                    <ul class="checklist">
+                        <li><b>保存数</b>：「あとで見よう」と保存されると評価アップ。</li>
+                        <li><b>滞在時間</b>：長い文章をじっくり読んでもらえると評価アップ。</li>
+                        <li><b>親密度</b>：コメントやDMでやり取りする人には、あなたの投稿が届きやすくなります。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             [4] カレンダー画面 (Calendar)
+             ========================================== -->
+        <section id="page-calendar" class="page fade-in">
+            <h2 class="title-font mb-4 text-center">ブランド育成カレンダー</h2>
+            
+            <div class="card today-advice">
+                <div class="badge mb-2">今日のおすすめテーマ</div>
+                <h3 class="title-font" style="font-size: 20px; color: var(--color-text-main);">
+                    「素材へのこだわり」を語る
+                </h3>
+                <p class="mt-2" style="font-size: 14px; color: var(--color-text-light);">
+                    いつも使っているパーツや布。なぜそれを選んでいるのか、写真を1枚添えてつぶやくように投稿してみませんか？
+                </p>
+                <button class="btn-primary mt-4" style="padding: 10px; font-size: 14px;" onclick="switchNav('nav-create', 'page-create')">
+                    このテーマで投稿を作る
+                </button>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 class="title-font">今週の記録</h3>
+                    <span style="font-size: 12px; color: var(--color-primary-dark);">3日連続達成！🌸</span>
+                </div>
+                
+                <div class="calendar-grid">
+                    <div><div class="day-name">月</div><div class="day done"><i data-lucide="check" style="width:16px;"></i></div></div>
+                    <div><div class="day-name">火</div><div class="day done"><i data-lucide="check" style="width:16px;"></i></div></div>
+                    <div><div class="day-name">水</div><div class="day done"><i data-lucide="check" style="width:16px;"></i></div></div>
+                    <div><div class="day-name">木</div><div class="day today">今日</div></div>
+                    <div><div class="day-name">金</div><div class="day"></div></div>
+                    <div><div class="day-name">土</div><div class="day"></div></div>
+                    <div><div class="day-name">日</div><div class="day"></div></div>
+                </div>
+            </div>
+        </section>
+
+    </div> <!-- content-area end -->
+
+    <!-- ==========================================
+         ボトムナビゲーション
+         ========================================== -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" id="nav-home" onclick="switchNav('nav-home', 'page-home')">
+            <i data-lucide="home"></i>
+            <span>ホーム</span>
+        </button>
+        <button class="nav-item" id="nav-create" onclick="switchNav('nav-create', 'page-create')">
+            <i data-lucide="plus-circle"></i>
+            <span>つくる</span>
+        </button>
+        <button class="nav-item" id="nav-learn" onclick="switchNav('nav-learn', 'page-learn')">
+            <i data-lucide="book-heart"></i>
+            <span>学ぶ</span>
+        </button>
+        <button class="nav-item" id="nav-calendar" onclick="switchNav('nav-calendar', 'page-calendar')">
+            <i data-lucide="calendar-days"></i>
+            <span>予定</span>
+        </button>
+    </nav>
+
+    <!-- ==========================================
+         モーダル：プロフィール診断
+         ========================================== -->
+    <div class="modal-overlay" id="profile-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeProfileModal()"><i data-lucide="x"></i></button>
+            
+            <div id="modal-step-input">
+                <h3 class="title-font text-center mb-4"><i data-lucide="sparkles" style="color:var(--color-primary)"></i> プロフィール診断</h3>
+                <p style="font-size: 14px; text-align: center; margin-bottom: 24px;">
+                    あなたのInstagramのIDを<br>入力してください。
+                </p>
+                <input type="text" placeholder="@your_account_id" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); margin-bottom: 24px; font-size: 16px; background-color: var(--color-bg);">
+                <button class="btn-primary" onclick="runDiagnosis()">診断スタート</button>
+            </div>
+
+            <div id="modal-step-loading" class="loader">
+                <div class="spinner"></div>
+                <p class="title-font" style="color: var(--color-primary-dark);">世界観を読み取っています...</p>
+            </div>
+
+            <div id="modal-step-result" style="display: none;">
+                <h3 class="title-font text-center mb-4">診断結果</h3>
+                <p style="font-size: 13px; margin-bottom: 16px;">
+                    素敵なアカウントですね！少しだけ「販売感」を和らげ、共感を呼ぶプロフィールに変える提案です。
+                </p>
+                
+                <div style="background-color: var(--color-bg); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                    <span class="badge mb-2" style="background-color: #E2E2E2;">改善前</span>
+                    <p style="font-size: 13px; color: var(--color-text-light);">
+                        ハンドメイドアクセサリー販売中！<br>
+                        新作は毎月1日発売。<br>
+                        購入は以下のBASEリンクからお願いします！⬇️
+                    </p>
+                </div>
+
+                <div style="background-color: rgba(163, 184, 153, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 24px; border: 1px solid var(--color-accent);">
+                    <span class="badge mb-2" style="background-color: var(--color-accent); color: white;">AIからの提案（改善後）</span>
+                    <p style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">
+                        日常に小さなときめきを添えるアクセサリー🌿
+                    </p>
+                    <p style="font-size: 13px;">
+                        ・本物のお花を使った1点もの<br>
+                        ・40代からの大人ナチュラルスタイル<br>
+                        ・制作の裏側やアトリエの風景をお届け☕️<br><br>
+                        作品のお迎え・詳細はこちらのURLからどうぞ🕊️⬇️
+                    </p>
+                </div>
+
+                <button class="btn-primary" onclick="closeProfileModal()">確認して閉じる</button>
+            </div>
+        </div>
+    </div>
+
+</div> <!-- app end -->
+
+<!-- ==========================================================================
+     JavaScript (画面切り替え・ダミーAI処理)
+     ========================================================================== -->
+<script>
+    // 1. Lucideアイコンの初期化
+    lucide.createIcons();
+
+    // 2. ページ遷移（SPA風）の制御
+    function switchNav(navId, pageId) {
+        // ナビの見た目を更新
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById(navId).classList.add('active');
+
+        // ページの表示を更新
+        document.querySelectorAll('.page').forEach(el => {
+            el.classList.remove('active');
+            el.classList.remove('fade-in'); // アニメーションリセット
+        });
+        
+        const targetPage = document.getElementById(pageId);
+        targetPage.classList.add('active');
+        // 少し遅延させてアニメーションクラスを付与
+        setTimeout(() => targetPage.classList.add('fade-in'), 10);
+        
+        window.scrollTo(0, 0); // 上部へスクロール
+    }
+
+    // 3. アコーディオン（マニュアル画面）の制御
+    function toggleAccordion(element) {
+        element.classList.toggle('open');
+    }
+
+    // 4. プロフィール診断モーダルの制御
+    function openProfileModal() {
+        document.getElementById('profile-modal').classList.add('active');
+        document.getElementById('modal-step-input').style.display = 'block';
+        document.getElementById('modal-step-loading').style.display = 'none';
+        document.getElementById('modal-step-result').style.display = 'none';
+    }
+
+    function closeProfileModal() {
+        document.getElementById('profile-modal').classList.remove('active');
+    }
+
+    function runDiagnosis() {
+        document.getElementById('modal-step-input').style.display = 'none';
+        document.getElementById('modal-step-loading').style.display = 'flex';
+
+        // AIの思考時間を演出（2秒後に結果表示）
+        setTimeout(() => {
+            document.getElementById('modal-step-loading').style.display = 'none';
+            document.getElementById('modal-step-result').style.display = 'block';
+        }, 2000);
+    }
+
+    // 5. 投稿作成画面のロジック
+    let currentPostType = 'feed'; // feed or reel
+
+    function selectPostType(type, element) {
+        currentPostType = type;
+        document.querySelectorAll('.type-card').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+
+    function previewImage(event) {
+        const input = event.target;
+        const btn = document.getElementById('btn-generate');
+        const preview = document.getElementById('image-preview');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'inline-block';
+                // ボタンを有効化
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function startGeneration() {
+        // UIの切り替え
+        document.getElementById('create-step-1').style.display = 'none';
+        document.getElementById('create-loading').style.display = 'flex';
+
+        // ダミーデータの生成
+        setTimeout(() => {
+            generateDummyText();
+            document.getElementById('create-loading').style.display = 'none';
+            document.getElementById('create-result').style.display = 'block';
+        }, 2500); // 2.5秒後に表示
+    }
+
+    function generateDummyText() {
+        const resultText = document.getElementById('result-text');
+        const resultTags = document.getElementById('result-tags');
+        const resultBaseText = document.getElementById('result-base-text');
+
+        if (currentPostType === 'feed') {
+            resultText.innerHTML = `こんにちは🌿<br>今日は新しくお迎えした、淡い色の天然石を使ってピアスを試作しています。<br><br>春の木漏れ日みたいな、優しい色合い。<br>見ているだけで心がホッとするような作品にしたくて、何度もパーツを組み直しています☕️<br><br>「こんな色が欲しかった！」<br>そんな風に思っていただけるよう、丁寧に仕上げていきますね。<br><br>完成したらまたお知らせさせてください🕊️<br><br>───<br>プロフィールのリンク（BASE）から、現在お迎えいただける作品たちをご覧いただけます。ゆっくり覗いてみてくださいね🪞<br>👉 @your_account_id`;
+            
+            resultTags.innerHTML = `#ハンドメイドアクセサリー #ハンドメイドピアス #大人ナチュラル #丁寧な暮らし #アトリエの風景 #制作記録 #天然石アクセサリー #40代コーデ #心地よい暮らし`;
+        } else {
+            // Reel
+            resultText.innerHTML = `【制作の裏側】春色ピアスの組み立て🌸<br><br>小さなパーツが組み合わさって、一つの形になる瞬間が一番好きです。<br><br>カチャカチャという音にも癒やされますように☕️<br><br>完成品はプロフィールのリンク（BASE）に並べる予定です🕊️<br>👉 @your_account_id`;
+            
+            resultTags.innerHTML = `#ハンドメイド制作風景 #アトリエ #ハンドメイド作家 #リール動画 #癒やしの時間 #手仕事のある暮らし`;
+        }
+
+        // BASE用の文章（ハッシュタグなし、売り込みすぎない）
+        resultBaseText.innerHTML = `ご覧いただきありがとうございます。<br><br>春の木漏れ日を閉じ込めたような、淡く優しい色合いの天然石を使用しました。<br>耳元でかすかに揺れるたび、お顔周りをパッと明るく見せてくれます。<br><br>大ぶりすぎないサイズ感なので、普段のお買い物から、ちょっとしたお出かけまで、どんなお洋服にもそっと寄り添います。<br><br>「毎日身につけたくなる、心地よいもの」を目指して、一つひとつアトリエで手作業で組み上げました。<br><br>あなたの日常に、小さなときめきをお届けできたら嬉しいです。<br><br>【素材】<br>天然石（〇〇）、金具（サージカルステンレス・アレルギー対応）<br><br>【サイズ】<br>全長 約3cm`;
+    }
+
+    // 投稿結果タブの切り替え
+    function switchResultTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+
+        if (tabName === 'insta') {
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.getElementById('tab-insta').classList.add('active');
+        } else {
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.getElementById('tab-base').classList.add('active');
+        }
+    }
+
+    // 作成画面のリセット
+    function resetCreate() {
+        document.getElementById('create-result').style.display = 'none';
+        document.getElementById('create-step-1').style.display = 'block';
+        document.getElementById('image-preview').style.display = 'none';
+        document.getElementById('image-preview').src = '';
+        
+        const fileInput = document.querySelector('.camera-area input[type="file"]');
+        fileInput.value = ''; // ファイルリセット
+        
+        const btn = document.getElementById('btn-generate');
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+    }
+
+</script>
+</body>
+</html>
