@@ -826,7 +826,7 @@
                 <p style="font-size: 14px; text-align: center; margin-bottom: 24px;">
                     あなたのInstagramのIDを<br>入力してください。
                 </p>
-                <input type="text" placeholder="@your_account_id" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); margin-bottom: 24px; font-size: 16px; background-color: var(--color-bg);">
+                <input type="text" id="diag-insta-id" placeholder="takamama5924" value="takamama5924" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); margin-bottom: 24px; font-size: 16px; background-color: var(--color-bg);">
                 <button class="btn-primary" onclick="runDiagnosis()">診断スタート</button>
             </div>
 
@@ -881,7 +881,7 @@
             
             <div class="mb-4">
                 <label style="font-size: 14px; font-weight: bold; display: block; margin-bottom: 8px;">Instagram ID</label>
-                <input type="text" id="setting-insta-id" placeholder="例: your_account_id ( @ は不要 )" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); font-size: 14px; background-color: var(--color-bg);">
+                <input type="text" id="setting-insta-id" placeholder="例: takamama5924 ( @ は不要 )" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); font-size: 14px; background-color: var(--color-bg);">
             </div>
 
             <div class="mb-4">
@@ -1007,7 +1007,8 @@
     };
 
     function loadSettings() {
-        const instaId = localStorage.getItem('tsumugu_insta_id') || '';
+        // デフォルトで takamama5924 をセット
+        const instaId = localStorage.getItem('tsumugu_insta_id') || 'takamama5924';
         const baseUrl = localStorage.getItem('tsumugu_base_url') || '';
         document.getElementById('setting-insta-id').value = instaId;
         document.getElementById('setting-base-url').value = baseUrl;
@@ -1055,7 +1056,7 @@
 
     // ショップ・SNSを開く機能
     function openInstagram() {
-        const instaId = localStorage.getItem('tsumugu_insta_id');
+        const instaId = localStorage.getItem('tsumugu_insta_id') || 'takamama5924';
         if (instaId) {
             window.open(`https://instagram.com/${instaId}`, '_blank');
         } else {
@@ -1166,14 +1167,15 @@
         const resultText = document.getElementById('result-text');
         const resultTags = document.getElementById('result-tags');
         const resultBaseText = document.getElementById('result-base-text');
+        const instaId = localStorage.getItem('tsumugu_insta_id') || 'takamama5924';
 
         if (currentPostType === 'feed') {
-            resultText.innerHTML = `こんにちは🌿<br>今日は新しくお迎えした、淡い色の天然石を使ってピアスを試作しています。<br><br>春の木漏れ日みたいな、優しい色合い。<br>見ているだけで心がホッとするような作品にしたくて、何度もパーツを組み直しています☕️<br><br>「こんな色が欲しかった！」<br>そんな風に思っていただけるよう、丁寧に仕上げていきますね。<br><br>完成したらまたお知らせさせてください🕊️<br><br>───<br>プロフィールのリンク（BASE）から、現在お迎えいただける作品たちをご覧いただけます。ゆっくり覗いてみてくださいね🪞<br>👉 @your_account_id`;
+            resultText.innerHTML = `こんにちは🌿<br>今日は新しくお迎えした、淡い色の天然石を使ってピアスを試作しています。<br><br>春の木漏れ日みたいな、優しい色合い。<br>見ているだけで心がホッとするような作品にしたくて、何度もパーツを組み直しています☕️<br><br>「こんな色が欲しかった！」<br>そんな風に思っていただけるよう、丁寧に仕上げていきますね。<br><br>完成したらまたお知らせさせてください🕊️<br><br>───<br>プロフィールのリンク（BASE）から、現在お迎えいただける作品たちをご覧いただけます。ゆっくり覗いてみてくださいね🪞<br>👉 @${instaId}`;
             
             resultTags.innerHTML = `#ハンドメイドアクセサリー #ハンドメイドピアス #大人ナチュラル #丁寧な暮らし #アトリエの風景 #制作記録 #天然石アクセサリー #40代コーデ #心地よい暮らし`;
         } else {
             // Reel
-            resultText.innerHTML = `【制作の裏側】春色ピアスの組み立て🌸<br><br>小さなパーツが組み合わさって、一つの形になる瞬間が一番好きです。<br><br>カチャカチャという音にも癒やされますように☕️<br><br>完成品はプロフィールのリンク（BASE）に並べる予定です🕊️<br>👉 @your_account_id`;
+            resultText.innerHTML = `【制作の裏側】春色ピアスの組み立て🌸<br><br>小さなパーツが組み合わさって、一つの形になる瞬間が一番好きです。<br><br>カチャカチャという音にも癒やされますように☕️<br><br>完成品はプロフィールのリンク（BASE）に並べる予定です🕊️<br>👉 @${instaId}`;
             
             resultTags.innerHTML = `#ハンドメイド制作風景 #アトリエ #ハンドメイド作家 #リール動画 #癒やしの時間 #手仕事のある暮らし`;
         }
